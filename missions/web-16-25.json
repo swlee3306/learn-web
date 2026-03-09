@@ -1,0 +1,146 @@
+{
+  "track": "web",
+  "level": "beginner",
+  "missions": [
+    {
+      "id": "mission-16",
+      "minutes": 14,
+      "titleKo": "미션 16 — classList로 강조 토글",
+      "pitchKo": "버튼 클릭으로 클래스(on/off)를 토글해서 스타일을 바꿔본다.",
+      "outcomesKo": ["classList.add/remove/toggle", "click 이벤트", "상태를 DOM에 반영"],
+      "checklistKo": ["버튼 클릭 시 카드가 강조(on) 상태로 토글", "ON일 때 버튼 문구 변경", "초기 상태는 OFF"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 16</h1>\n  <p class=\"desc\">버튼을 눌러 카드 강조를 켰다/껐다 해봐.</p>\n  <div id=\"card\" class=\"card\">\n    <b>카드</b> — 강조 토글 대상\n  </div>\n  <button id=\"btn\" class=\"btn\">강조 켜기</button>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(860px,92vw);}\n.h1{margin:0 0 8px 0;font-size:28px;}\n.desc{margin:0 0 14px 0;opacity:0.85;}\n.card{padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;}\n.card.on{border-color: rgba(255,212,59,0.45); box-shadow: 0 0 0 3px rgba(255,212,59,0.14); transform: translateY(-2px);}\n.btn{margin-top:14px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:white;padding:10px 14px;border-radius:12px;cursor:pointer;}\n.btn:hover{background:rgba(255,255,255,0.12);}\n",
+        "js": "// 목표: 버튼(#btn)을 클릭하면 카드(#card)에 .on 클래스를 토글해.\n// 힌트: element.classList.toggle('on')\n\nconst btn = document.querySelector('#btn');\nconst card = document.querySelector('#card');\n\n// TODO: 클릭 이벤트를 연결하고, card의 on 상태에 따라 btn.textContent도 바꿔.\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(name,details)=>results.push({name,pass:true,details:details||''});\n  const fail=(name,details)=>results.push({name,pass:false,details:details||''});\n  const btn=document.querySelector('#btn');\n  const card=document.querySelector('#card');\n  if(!btn) fail('버튼 존재(#btn)',{tab:'html',fix:'id=\"btn\" 버튼을 만들어줘.'}); else pass('버튼 존재(#btn)');\n  if(!card) fail('카드 존재(#card)',{tab:'html',fix:'id=\"card\" 요소를 만들어줘.'}); else pass('카드 존재(#card)');\n  if(!btn||!card) return results;\n  try{\n    const before=card.classList.contains('on');\n    btn.click();\n    await new Promise(r=>setTimeout(r,30));\n    const after=card.classList.contains('on');\n    if(before===after) fail('클릭 시 .on 토글',{tab:'js',fix:'card.classList.toggle(\"on\")을 클릭 핸들러에 넣어.'});\n    else pass('클릭 시 .on 토글', String(before)+'→'+String(after));\n    const label=(btn.textContent||'').trim();\n    if(!label) fail('버튼 문구 존재',{tab:'js',fix:'btn.textContent를 on/off에 맞게 설정해.'});\n    else pass('버튼 문구 존재', label);\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-17",
+      "minutes": 16,
+      "titleKo": "미션 17 — 리스트 아이템 클릭(이벤트 위임)",
+      "pitchKo": "여러 항목을 한 번에 처리하는 이벤트 위임을 배운다.",
+      "outcomesKo": ["event.target", "이벤트 위임", "dataset 사용"],
+      "checklistKo": ["리스트에서 항목 클릭 시 선택 표시", "선택된 항목 텍스트를 상단에 표시", "다른 항목 클릭 시 선택이 이동"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 17</h1>\n  <p id=\"picked\" class=\"picked\">선택: (없음)</p>\n  <ul id=\"list\" class=\"list\">\n    <li data-item=\"아메리카노\">아메리카노</li>\n    <li data-item=\"라떼\">라떼</li>\n    <li data-item=\"말차\">말차</li>\n  </ul>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(860px,92vw);}\n.h1{margin:0 0 8px 0;font-size:28px;}\n.picked{margin:0 0 12px 0;opacity:0.9;}\n.list{list-style:none;padding:0;margin:0;display:grid;gap:8px;}\n.list li{padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);cursor:pointer;}\n.list li:hover{background:rgba(255,255,255,0.08);}\n.list li.on{border-color: rgba(124,255,107,0.55); box-shadow:0 0 0 3px rgba(124,255,107,0.12);}\n",
+        "js": "// 목표: #list에 클릭 이벤트 1개만 달아서(이벤트 위임) li를 선택(on)해.\n// 선택된 항목의 data-item 값을 #picked에 표시해.\n\nconst list = document.querySelector('#list');\nconst picked = document.querySelector('#picked');\n\n// TODO: list.addEventListener('click', (e) => { ... })\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(name,details)=>results.push({name,pass:true,details:details||''});\n  const fail=(name,details)=>results.push({name,pass:false,details:details||''});\n  const list=document.querySelector('#list');\n  const picked=document.querySelector('#picked');\n  const items=list?Array.from(list.querySelectorAll('li')):[];\n  if(!list) fail('리스트 존재(#list)',{tab:'html',fix:'id=\"list\"인 ul을 만들어줘.'}); else pass('리스트 존재(#list)');\n  if(!picked) fail('표시 영역(#picked)',{tab:'html',fix:'id=\"picked\"인 요소를 만들어줘.'}); else pass('표시 영역(#picked)');\n  if(items.length<2) fail('li 2개 이상',{tab:'html',fix:'li를 2개 이상 넣어줘.'}); else pass('li 2개 이상');\n  if(!list||!picked||items.length<2) return results;\n  try{\n    items[0].click();\n    await new Promise(r=>setTimeout(r,30));\n    const t1=(picked.textContent||'').trim();\n    if(!t1.includes(items[0].dataset.item||'')) fail('클릭 시 선택 표시',{tab:'js',fix:'e.target.closest(\"li\")로 li를 찾고, picked.textContent를 갱신해.'});\n    else pass('클릭 시 선택 표시', t1);\n    items[1].click();\n    await new Promise(r=>setTimeout(r,30));\n    const onCount=items.filter(li=>li.classList.contains('on')).length;\n    if(onCount!==1) fail('선택은 1개만',{tab:'js',fix:'선택 전 기존 .on을 제거하고 새 항목에만 .on을 붙여.'});\n    else pass('선택은 1개만');\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-18",
+      "minutes": 18,
+      "titleKo": "미션 18 — 테마 토글 + localStorage 저장",
+      "pitchKo": "토글 상태를 저장해서 새로고침해도 유지되게 만든다.",
+      "outcomesKo": ["localStorage.getItem/setItem", "초기화 로직", "classList로 테마 적용"],
+      "checklistKo": ["테마 버튼으로 dark/light 토글", "선택한 테마를 localStorage에 저장", "새로고침 후에도 유지"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 18</h1>\n  <p class=\"desc\">테마를 바꾸고 새로고침해도 유지되게 해봐.</p>\n  <button id=\"themeBtn\" class=\"btn\">테마: dark</button>\n  <div class=\"panel\">패널</div>\n</div>\n",
+        "css": ":root{--bg:#0b1020;--fg:#fff;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.15);}\nbody{margin:0;font-family:system-ui;background:var(--bg);color:var(--fg);min-height:100vh;display:grid;place-items:center;}\nbody.light{--bg:#f8fafc;--fg:#0f172a;--card:#fff;--border:rgba(15,23,42,0.18);}\n.wrap{width:min(860px,92vw);}\n.h1{margin:0 0 8px 0;font-size:28px;}\n.desc{margin:0 0 14px 0;opacity:0.85;}\n.btn{border:1px solid var(--border);background:var(--card);color:var(--fg);padding:10px 14px;border-radius:12px;cursor:pointer;}\n.panel{margin-top:14px;padding:16px;border-radius:14px;border:1px solid var(--border);background:var(--card);}\n",
+        "js": "// 목표: themeBtn 클릭 시 body에 light 클래스를 토글하고, 값을 localStorage에 저장해.\n// key 예: learn.theme = 'dark' | 'light'\n\nconst key = 'learn.theme';\nconst btn = document.querySelector('#themeBtn');\n\n// TODO: 1) 초기 로드 시 localStorage 값을 읽어서 body/class와 버튼 텍스트를 맞춰.\n// TODO: 2) 클릭 시 토글하고 저장해.\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const btn=document.querySelector('#themeBtn');\n  if(!btn) fail('버튼 존재(#themeBtn)',{tab:'html',fix:'id=\"themeBtn\" 버튼을 만들어줘.'}); else pass('버튼 존재(#themeBtn)');\n  if(!btn) return results;\n  try{\n    const before=document.body.classList.contains('light');\n    btn.click();\n    await new Promise(r=>setTimeout(r,30));\n    const after=document.body.classList.contains('light');\n    if(before===after) fail('클릭 시 테마 토글',{tab:'js',fix:'document.body.classList.toggle(\"light\")를 구현해.'});\n    else pass('클릭 시 테마 토글', String(before)+'→'+String(after));\n    const v=localStorage.getItem('learn.theme');\n    if(v!=='dark' && v!=='light') fail('localStorage 저장',{tab:'js',fix:'localStorage.setItem(\"learn.theme\", \"dark\"|\"light\")를 저장해.'});\n    else pass('localStorage 저장', v);\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-19",
+      "minutes": 20,
+      "titleKo": "미션 19 — 입력 검증(이메일) + 에러 표시",
+      "pitchKo": "정규식/조건문으로 입력을 검증하고 UI로 피드백한다.",
+      "outcomesKo": ["input 이벤트", "조건문", "간단한 정규식"],
+      "checklistKo": ["이메일 형식이면 OK 표시", "형식이 아니면 에러 메시지 표시", "빈 값이면 에러 숨김"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 19</h1>\n  <label class=\"label\">Email</label>\n  <input id=\"email\" class=\"input\" placeholder=\"you@example.com\" />\n  <p id=\"msg\" class=\"msg\"></p>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(560px,92vw);}\n.h1{margin:0 0 12px 0;font-size:28px;}\n.label{display:block;margin-bottom:6px;opacity:0.9;}\n.input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);color:white;}\n.msg{margin:10px 0 0 0;min-height:24px;}\n.msg.ok{color:#7CFF6B;}\n.msg.err{color:#ff6b6b;}\n",
+        "js": "// 목표: email 입력값을 검증해서 msg에 결과를 보여줘.\n// 규칙: 빈 값이면 msg 비움. 이메일이면 'OK', 아니면 '이메일 형식이 아니야'\n\nconst input = document.querySelector('#email');\nconst msg = document.querySelector('#msg');\n\n// TODO: input 이벤트를 달고 검증 로직을 작성해.\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const input=document.querySelector('#email');\n  const msg=document.querySelector('#msg');\n  if(!input) fail('입력 존재(#email)',{tab:'html',fix:'id=\"email\" input을 만들어줘.'}); else pass('입력 존재(#email)');\n  if(!msg) fail('메시지 존재(#msg)',{tab:'html',fix:'id=\"msg\" 요소를 만들어줘.'}); else pass('메시지 존재(#msg)');\n  if(!input||!msg) return results;\n  try{\n    input.value='';\n    input.dispatchEvent(new Event('input',{bubbles:true}));\n    await new Promise(r=>setTimeout(r,30));\n    const t0=(msg.textContent||'').trim();\n    if(t0) fail('빈 값이면 비움',{tab:'js',fix:'빈 값이면 msg.textContent를 빈 문자열로.'});\n    else pass('빈 값이면 비움');\n\n    input.value='nope';\n    input.dispatchEvent(new Event('input',{bubbles:true}));\n    await new Promise(r=>setTimeout(r,30));\n    const t1=(msg.textContent||'').trim();\n    if(!t1) fail('잘못된 형식 에러',{tab:'js',fix:'잘못된 형식이면 에러 문구를 표시해.'});\n    else pass('잘못된 형식 에러', t1);\n\n    input.value='a@b.com';\n    input.dispatchEvent(new Event('input',{bubbles:true}));\n    await new Promise(r=>setTimeout(r,30));\n    const t2=(msg.textContent||'').trim().toLowerCase();\n    if(!t2.includes('ok')) fail('올바른 이메일이면 OK',{tab:'js',fix:'email 형식이면 msg에 OK를 표시해.'});\n    else pass('올바른 이메일이면 OK', t2);\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-20",
+      "minutes": 18,
+      "titleKo": "미션 20 — 탭 UI 만들기",
+      "pitchKo": "버튼으로 섹션을 전환하는 탭 UI를 만든다.",
+      "outcomesKo": ["data-*", "classList로 show/hide", "선택 상태 관리"],
+      "checklistKo": ["탭 버튼 2개로 패널 전환", "활성 탭에 on 클래스", "초기 탭은 첫 번째"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 20</h1>\n  <div class=\"tabs\">\n    <button class=\"tab\" data-tab=\"a\">탭 A</button>\n    <button class=\"tab\" data-tab=\"b\">탭 B</button>\n  </div>\n  <div id=\"panelA\" class=\"panel\">패널 A</div>\n  <div id=\"panelB\" class=\"panel\">패널 B</div>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(860px,92vw);}\n.h1{margin:0 0 12px 0;font-size:28px;}\n.tabs{display:flex;gap:8px;}\n.tab{border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:white;padding:10px 12px;border-radius:12px;cursor:pointer;}\n.tab.on{border-color: rgba(255,212,59,0.55); background: rgba(255,212,59,0.18);}\n.panel{margin-top:14px;padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);}\n.panel.hide{display:none;}\n",
+        "js": "// 목표: 탭 버튼을 클릭하면 해당 패널만 보이게 해.\n// 힌트: document.querySelectorAll('.tab'), dataset.tab, classList\n\nconst tabs = document.querySelectorAll('.tab');\nconst panelA = document.querySelector('#panelA');\nconst panelB = document.querySelector('#panelB');\n\n// TODO: 초기에는 A가 보이고 B는 숨김.\n// TODO: 클릭 시 on 클래스/패널 hide 클래스를 갱신.\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const btnA=document.querySelector('.tab[data-tab=\"a\"]');\n  const btnB=document.querySelector('.tab[data-tab=\"b\"]');\n  const panelA=document.querySelector('#panelA');\n  const panelB=document.querySelector('#panelB');\n  if(!btnA||!btnB) fail('탭 버튼 2개', {tab:'html',fix:'data-tab=a 와 data-tab=b 버튼 2개를 만들어줘.'}); else pass('탭 버튼 2개');\n  if(!panelA||!panelB) fail('패널 2개', {tab:'html',fix:'#panelA/#panelB를 만들어줘.'}); else pass('패널 2개');\n  if(!btnA||!btnB||!panelA||!panelB) return results;\n  try{\n    // 초기 상태(선택) 확인은 느슨하게: 둘 중 하나만 보여도 OK로.\n    btnB.click();\n    await new Promise(r=>setTimeout(r,30));\n    const bHidden=panelB.classList.contains('hide');\n    const aHidden=panelA.classList.contains('hide');\n    if(bHidden || !aHidden) pass('탭 전환 동작'); else fail('탭 전환 동작',{tab:'js',fix:'B 클릭 시 panelB는 보이고 panelA는 숨겨야 해.'});\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-21",
+      "minutes": 22,
+      "titleKo": "미션 21 — 스톱워치(시작/정지)",
+      "pitchKo": "setInterval로 시간을 올리고 시작/정지를 구현한다.",
+      "outcomesKo": ["setInterval/clearInterval", "상태 변수", "버튼 상태"],
+      "checklistKo": ["Start 클릭 시 1초마다 증가", "Stop 클릭 시 멈춤", "Reset으로 0"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 21</h1>\n  <div id=\"time\" class=\"time\">0</div>\n  <div class=\"row\">\n    <button id=\"start\" class=\"btn\">Start</button>\n    <button id=\"stop\" class=\"btn\">Stop</button>\n    <button id=\"reset\" class=\"btn\">Reset</button>\n  </div>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(560px,92vw);text-align:center;}\n.h1{margin:0 0 12px 0;font-size:28px;}\n.time{font-size:56px;font-weight:800;letter-spacing:-1px;}\n.row{margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}\n.btn{border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:white;padding:10px 14px;border-radius:12px;cursor:pointer;}\n.btn:hover{background:rgba(255,255,255,0.12);}\n",
+        "js": "// 목표: start/stop/reset 동작 구현\n// 힌트: let timerId = null; setInterval/clearInterval\n\nconst timeEl = document.querySelector('#time');\nconst startBtn = document.querySelector('#start');\nconst stopBtn = document.querySelector('#stop');\nconst resetBtn = document.querySelector('#reset');\n\nlet t = 0;\nlet timerId = null;\n\nfunction render(){\n  timeEl.textContent = String(t);\n}\n\n// TODO: start 클릭 시 이미 동작 중이면 무시하고, 아니면 1초마다 t++ 후 render\n// TODO: stop 클릭 시 clearInterval\n// TODO: reset 클릭 시 t=0 후 render\nrender();\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const timeEl=document.querySelector('#time');\n  const start=document.querySelector('#start');\n  const stop=document.querySelector('#stop');\n  const reset=document.querySelector('#reset');\n  if(!timeEl||!start||!stop||!reset){\n    fail('요소 존재', {tab:'html',fix:'#time/#start/#stop/#reset를 만들어줘.'});\n    return results;\n  }\n  pass('요소 존재');\n  try{\n    const before=(timeEl.textContent||'').trim();\n    start.click();\n    await new Promise(r=>setTimeout(r,1100));\n    const after=(timeEl.textContent||'').trim();\n    if(after===before) fail('Start 동작',{tab:'js',fix:'setInterval로 t를 증가시키고 render() 호출해.'});\n    else pass('Start 동작', before+'→'+after);\n    stop.click();\n    const stopped=after;\n    await new Promise(r=>setTimeout(r,1100));\n    const afterStop=(timeEl.textContent||'').trim();\n    if(afterStop!==stopped) fail('Stop 동작',{tab:'js',fix:'stop 클릭 시 clearInterval 해야 해.'});\n    else pass('Stop 동작');\n    reset.click();\n    await new Promise(r=>setTimeout(r,30));\n    const afterReset=(timeEl.textContent||'').trim();\n    if(afterReset!=='0') fail('Reset 동작',{tab:'js',fix:'reset 클릭 시 t=0 후 render() 해.'});\n    else pass('Reset 동작');\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-22",
+      "minutes": 18,
+      "titleKo": "미션 22 — 검색어로 리스트 필터",
+      "pitchKo": "input 값으로 리스트를 필터링해서 보여준다.",
+      "outcomesKo": ["toLowerCase/includes", "리스트 렌더", "input 이벤트"],
+      "checklistKo": ["검색어 입력 시 포함 항목만 표시", "빈 값이면 전체 표시", "대소문자 무시"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 22</h1>\n  <input id=\"q\" class=\"input\" placeholder=\"검색...\" />\n  <ul id=\"list\" class=\"list\"></ul>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(560px,92vw);}\n.h1{margin:0 0 12px 0;font-size:28px;}\n.input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);color:white;}\n.list{margin:12px 0 0 0;padding:0;list-style:none;display:grid;gap:8px;}\n.list li{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);}\n",
+        "js": "// 목표: q 입력값으로 items를 필터링해 list에 렌더해.\n\nconst items = ['Kubernetes', 'Docker', 'TypeScript', 'Next.js', 'Python'];\nconst q = document.querySelector('#q');\nconst list = document.querySelector('#list');\n\nfunction render(){\n  // TODO: list.innerHTML = '' 후, 조건에 맞는 li를 다시 채워.\n}\n\n// TODO: input 이벤트로 render 호출\nrender();\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const q=document.querySelector('#q');\n  const list=document.querySelector('#list');\n  if(!q||!list){ fail('요소 존재', {tab:'html',fix:'#q input과 #list ul을 만들어줘.'}); return results; }\n  pass('요소 존재');\n  try{\n    q.value='py';\n    q.dispatchEvent(new Event('input',{bubbles:true}));\n    await new Promise(r=>setTimeout(r,30));\n    const texts=Array.from(list.querySelectorAll('li')).map(li=>(li.textContent||'').toLowerCase());\n    if(texts.length===0) fail('필터 결과 표시',{tab:'js',fix:'검색어에 맞는 항목을 렌더해.'});\n    else if(!texts.some(t=>t.includes('python'))) fail('Python 포함',{tab:'js',fix:'대소문자 무시하고 includes로 필터해.'});\n    else pass('필터 결과 표시', texts.join(','));\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-23",
+      "minutes": 16,
+      "titleKo": "미션 23 — 모달 열기/닫기",
+      "pitchKo": "오버레이(모달)를 열고 닫는 기본 패턴을 만든다.",
+      "outcomesKo": ["classList로 표시/숨김", "키보드 Escape", "이벤트 처리"],
+      "checklistKo": ["Open 클릭 시 모달 표시", "Close/배경 클릭 시 닫힘", "Escape로 닫힘"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 23</h1>\n  <button id=\"open\" class=\"btn\">Open modal</button>\n\n  <div id=\"modal\" class=\"modal hide\" role=\"dialog\" aria-modal=\"true\">\n    <div class=\"backdrop\" id=\"backdrop\"></div>\n    <div class=\"sheet\">\n      <h2>모달</h2>\n      <p>배경을 클릭하거나 Escape로 닫아봐.</p>\n      <button id=\"close\" class=\"btn\">Close</button>\n    </div>\n  </div>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(560px,92vw);}\n.h1{margin:0 0 12px 0;font-size:28px;}\n.btn{border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:white;padding:10px 14px;border-radius:12px;cursor:pointer;}\n.modal{position:fixed;inset:0;display:grid;place-items:center;}\n.modal.hide{display:none;}\n.backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.55);}\n.sheet{position:relative;z-index:1;width:min(520px,92vw);border-radius:14px;border:1px solid rgba(255,255,255,0.15);background:#11183a;padding:16px;}\n",
+        "js": "// 목표: open/close/backdrop/Escape로 모달을 열고 닫아.\n\nconst modal = document.querySelector('#modal');\nconst openBtn = document.querySelector('#open');\nconst closeBtn = document.querySelector('#close');\nconst backdrop = document.querySelector('#backdrop');\n\nfunction open(){\n  // TODO\n}\nfunction close(){\n  // TODO\n}\n\n// TODO: 이벤트 연결\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const modal=document.querySelector('#modal');\n  const openBtn=document.querySelector('#open');\n  const closeBtn=document.querySelector('#close');\n  const backdrop=document.querySelector('#backdrop');\n  if(!modal||!openBtn||!closeBtn||!backdrop){ fail('요소 존재', {tab:'html',fix:'#modal/#open/#close/#backdrop를 만들어줘.'}); return results; }\n  pass('요소 존재');\n  try{\n    openBtn.click();\n    await new Promise(r=>setTimeout(r,30));\n    if(modal.classList.contains('hide')) fail('Open 동작',{tab:'js',fix:'open()에서 modal.classList.remove(\"hide\") 해.'});\n    else pass('Open 동작');\n    closeBtn.click();\n    await new Promise(r=>setTimeout(r,30));\n    if(!modal.classList.contains('hide')) fail('Close 동작',{tab:'js',fix:'close()에서 modal.classList.add(\"hide\") 해.'});\n    else pass('Close 동작');\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-24",
+      "minutes": 18,
+      "titleKo": "미션 24 — 키보드 단축키(Enter로 추가)",
+      "pitchKo": "keypress가 아니라 keydown과 Enter 키를 처리한다.",
+      "outcomesKo": ["keydown 이벤트", "Enter 처리", "배열 + 렌더"],
+      "checklistKo": ["Enter로 항목 추가", "빈 값이면 추가 안 함", "추가 후 input 비움"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 24</h1>\n  <input id=\"todo\" class=\"input\" placeholder=\"할 일 입력 후 Enter\" />\n  <ul id=\"list\" class=\"list\"></ul>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(560px,92vw);}\n.h1{margin:0 0 12px 0;font-size:28px;}\n.input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);color:white;}\n.list{margin:12px 0 0 0;padding:0;list-style:none;display:grid;gap:8px;}\n.list li{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);}\n",
+        "js": "// 목표: Enter를 누르면 input 값을 list에 추가해.\n\nconst input = document.querySelector('#todo');\nconst list = document.querySelector('#list');\nconst items = [];\n\nfunction render(){\n  list.innerHTML = items.map(x => `<li>${x}</li>`).join('');\n}\n\n// TODO: input.addEventListener('keydown', (e) => { if(e.key==='Enter') ... })\nrender();\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const input=document.querySelector('#todo');\n  const list=document.querySelector('#list');\n  if(!input||!list){ fail('요소 존재',{tab:'html',fix:'#todo input과 #list ul을 만들어줘.'}); return results; }\n  pass('요소 존재');\n  try{\n    input.value='abc';\n    input.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',bubbles:true}));\n    await new Promise(r=>setTimeout(r,30));\n    const lis=list.querySelectorAll('li');\n    if(lis.length===0) fail('Enter로 추가',{tab:'js',fix:'Enter일 때 items.push 후 render() 해.'});\n    else pass('Enter로 추가');\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    },
+    {
+      "id": "mission-25",
+      "minutes": 24,
+      "titleKo": "미션 25 — JSON 저장/불러오기(Export/Import)",
+      "pitchKo": "데이터를 JSON으로 내보내고 다시 불러오는 흐름을 만든다.",
+      "outcomesKo": ["JSON.stringify/parse", "textarea", "에러 처리"],
+      "checklistKo": ["Export로 현재 items를 JSON으로 출력", "Import로 JSON을 읽어 items 갱신", "잘못된 JSON이면 에러 표시"],
+      "defaults": {
+        "html": "<div class=\"wrap\">\n  <h1 class=\"h1\">Mission 25</h1>\n  <div class=\"row\">\n    <button id=\"export\" class=\"btn\">Export</button>\n    <button id=\"import\" class=\"btn\">Import</button>\n  </div>\n  <textarea id=\"box\" class=\"box\" rows=\"6\" placeholder=\"여기에 JSON이 들어갑니다\"></textarea>\n  <p id=\"msg\" class=\"msg\"></p>\n  <ul id=\"list\" class=\"list\"></ul>\n</div>\n",
+        "css": "body{margin:0;font-family:system-ui;background:#0b1020;color:white;min-height:100vh;display:grid;place-items:center;}\n.wrap{width:min(700px,92vw);}\n.h1{margin:0 0 12px 0;font-size:28px;}\n.row{display:flex;gap:10px;flex-wrap:wrap;}\n.btn{border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:white;padding:10px 14px;border-radius:12px;cursor:pointer;}\n.box{margin-top:12px;width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.04);color:white;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace;}\n.msg{min-height:24px;margin:10px 0 0 0;}\n.msg.err{color:#ff6b6b;}\n.list{margin:12px 0 0 0;padding:0;list-style:none;display:grid;gap:8px;}\n.list li{padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);}\n",
+        "js": "// 목표: Export/Import 버튼으로 items를 JSON으로 내보내고 불러와.\n\nconst items = ['alpha', 'beta'];\nconst list = document.querySelector('#list');\nconst box = document.querySelector('#box');\nconst msg = document.querySelector('#msg');\nconst exportBtn = document.querySelector('#export');\nconst importBtn = document.querySelector('#import');\n\nfunction render(){\n  list.innerHTML = items.map(x=>`<li>${x}</li>`).join('');\n}\n\n// TODO: exportBtn 클릭 시 box.value = JSON.stringify(items, null, 2)\n// TODO: importBtn 클릭 시 box.value를 JSON.parse해서 items를 갱신하고 render()\n// TODO: JSON.parse 실패하면 msg에 에러 표시\n\nrender();\n"
+      },
+      "testsJs": "window.__learnRunTests = async function(){\n  const results=[];\n  const pass=(n,d)=>results.push({name:n,pass:true,details:d||''});\n  const fail=(n,d)=>results.push({name:n,pass:false,details:d||''});\n  const box=document.querySelector('#box');\n  const exportBtn=document.querySelector('#export');\n  const importBtn=document.querySelector('#import');\n  const list=document.querySelector('#list');\n  if(!box||!exportBtn||!importBtn||!list){ fail('요소 존재',{tab:'html',fix:'#box/#export/#import/#list를 만들어줘.'}); return results; }\n  pass('요소 존재');\n  try{\n    exportBtn.click();\n    await new Promise(r=>setTimeout(r,30));\n    const v=(box.value||'').trim();\n    if(!v.startsWith('[')) fail('Export JSON 출력',{tab:'js',fix:'export 클릭 시 box.value에 JSON.stringify(items)를 넣어.'});\n    else pass('Export JSON 출력');\n\n    box.value = JSON.stringify(['x','y','z']);\n    importBtn.click();\n    await new Promise(r=>setTimeout(r,30));\n    const count=list.querySelectorAll('li').length;\n    if(count<3) fail('Import 반영',{tab:'js',fix:'import 클릭 시 JSON.parse로 items 갱신 후 render() 해.'});\n    else pass('Import 반영');\n  }catch(e){ fail('동작 테스트', String(e && (e.stack||e))); }\n  return results;\n};\n"
+    }
+  ]
+}

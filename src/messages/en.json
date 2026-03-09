@@ -1,0 +1,25 @@
+{
+  "nav": {
+    "title": "Code Playground",
+    "subtitle": "Learn by building fun things",
+    "webTrack": "Web Starter",
+    "pythonTrack": "Python Starter"
+  },
+  "home": {
+    "headline": "What do you want to build today?",
+    "desc": "Short explanations, instant practice, visible results.",
+    "startWeb": "Start Web Starter",
+    "startPython": "Start Python Starter (with local guide)"
+  },
+  "mission1": {
+    "title": "Mission 1 — Make a neon sign with your name",
+    "goal": "Create a neon effect with CSS, then change colors on button click.",
+    "hint": "Tip: Stack multiple text-shadows to get a neon glow.",
+    "run": "Run",
+    "reset": "Reset",
+    "explain": "What you'll learn",
+    "learn1": "Place text using HTML",
+    "learn2": "Style with CSS (color/shadow/animation)",
+    "learn3": "Handle click events with JavaScript"
+  }
+}
