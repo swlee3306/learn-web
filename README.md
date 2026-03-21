@@ -1,5 +1,13 @@
 # learn-web (/learn)
 
+## 한 줄 소개
+짧은 미션으로 웹 개발을 연습하는 학습 사이트입니다.
+
+## 저장소 성격
+- 분류: 웹 / 학습 서비스
+- 목적: 웹 코딩 학습과 미션 기반 연습
+- 핵심 기술: Next.js, TypeScript, 웹 학습 UI
+
 A small, game-ish **web coding learning site** built with **Next.js**.
 
 It’s designed for “fast dopamine” practice: short missions, an in-browser sandbox, automatic checks, and progress tracking.
