@@ -4,7 +4,7 @@
  *
  * Usage:
  *   node scripts/e2e-mission-6.mjs
- *   BASE=http://192.168.219.122:30080/learn node scripts/e2e-mission-6.mjs
+ *   BASE=https://example.invalid/learn node scripts/e2e-mission-6.mjs
  *
  * Notes:
  * - Uses OpenClaw managed browser via CLI (`openclaw browser ...`).

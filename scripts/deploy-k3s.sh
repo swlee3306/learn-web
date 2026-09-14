@@ -10,6 +10,7 @@ set -euo pipefail
 # - App is served under /learn (see k8s/learn/*)
 #
 # Usage examples:
+#   Set K8S_DIR to your private manifest directory before running any example.
 #   TAG=0.1.38 ./scripts/deploy-k3s.sh
 #   TAG=0.1.39 NS=personal ./scripts/deploy-k3s.sh
 #   TAG=dev-$(date +%Y%m%d-%H%M) ./scripts/deploy-k3s.sh
@@ -19,7 +20,7 @@ set -euo pipefail
 #   APPLY_ONLY=1    # skip docker build/import, just apply manifests + rollout
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-K8S_DIR="${K8S_DIR:-/home/sulee/.openclaw/workspace/k8s/learn}"
+K8S_DIR="${K8S_DIR:?Set the private manifest directory explicitly}"
 NS="${NS:-personal}"
 DEPLOY="${DEPLOY:-learn-web}"
 # container name in k8s/learn/learn-web.yaml is "web"

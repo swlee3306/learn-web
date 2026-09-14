@@ -3,12 +3,12 @@ set -euo pipefail
 
 # External smoke check (public URL).
 # Usage:
-#   BASE=https://dusanserver.webhop.me/learn ./scripts/external-smoke.sh
+#   BASE=https://example.invalid/learn ./scripts/external-smoke.sh
 
 # NOTE: When running *inside the same LAN* as the server, some routers block
 # hairpin NAT (NAT loopback). In that case the public domain may time out.
-# For local/LAN runs, prefer the NodePort base below.
-BASE="${BASE:-http://192.168.219.122:30080/learn}"
+# Supply your authorized test endpoint explicitly; no default target is contacted.
+BASE="${BASE:?Set the authorized test endpoint explicitly}"
 TIMEOUT_S="${TIMEOUT_S:-8}"
 
 need() { command -v "$1" >/dev/null 2>&1 || { echo "Missing dependency: $1" >&2; exit 2; }; }
